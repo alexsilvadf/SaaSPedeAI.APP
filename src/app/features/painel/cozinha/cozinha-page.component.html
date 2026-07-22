@@ -1,0 +1,97 @@
+<div class="page">
+  <header>
+    <h1>Cozinha</h1>
+    <p>{{ pedidos.length }} pedido(s) na fila</p>
+  </header>
+
+  <div class="grid" *ngIf="pedidos.length; else vazio">
+    <article
+      class="ticket"
+      *ngFor="let pedido of pedidos"
+      [attr.data-status]="pedido.status"
+      [class.ticket--novos]="temNovos(pedido) && temProntos(pedido)"
+    >
+      <div class="ticket__top">
+        <div>
+          <strong>{{ pedido.id }}</strong>
+          <span class="ticket__canal">{{ canal(pedido) }}</span>
+        </div>
+        <span class="ticket__badge" [class.ticket__badge--novo]="temNovos(pedido) && temProntos(pedido)">
+          {{ badgePedido(pedido) }}
+        </span>
+      </div>
+
+      <p class="ticket__cliente" *ngIf="pedido.cliente?.nome">
+        Cliente: {{ pedido.cliente.nome }}
+      </p>
+
+      <div class="ticket__obs-geral" *ngIf="pedido.cliente?.observacao">
+        <strong>Obs. do pedido</strong>
+        <p>{{ pedido.cliente.observacao }}</p>
+      </div>
+
+      <section class="itens itens--novos" *ngIf="temNovos(pedido)">
+        <h2>
+          {{ temProntos(pedido) ? 'Novos itens para preparar' : 'Itens para preparar' }}
+          <span>{{ itensNovos(pedido).length }}</span>
+        </h2>
+
+        <article class="item item--novo" *ngFor="let item of itensNovos(pedido)">
+          <header class="item__head">
+            <strong>{{ item.quantidade }}x {{ item.nome }}</strong>
+            <em *ngIf="horarioItem(item)">{{ horarioItem(item) }}</em>
+          </header>
+          <span class="item__tag" *ngIf="temProntos(pedido)">NOVO</span>
+
+          <div class="item__extras" *ngIf="item.adicionais?.length">
+            <span class="item__label">Adicionais / opções</span>
+            <ul>
+              <li *ngFor="let adicional of item.adicionais">
+                {{ adicional.nome }}
+                <em *ngIf="adicional.preco > 0">(+ {{ adicional.preco | brl }})</em>
+              </li>
+            </ul>
+          </div>
+
+          <p class="item__sem-extra" *ngIf="!item.adicionais?.length">Sem adicionais</p>
+
+          <div class="item__obs" *ngIf="item.observacao">
+            <span class="item__label">Observação do item</span>
+            <p>{{ item.observacao }}</p>
+          </div>
+        </article>
+      </section>
+
+      <section class="itens itens--prontos" *ngIf="temProntos(pedido)">
+        <h2>
+          Já preparados
+          <span>{{ itensProntos(pedido).length }}</span>
+        </h2>
+
+        <article class="item item--pronto" *ngFor="let item of itensProntos(pedido)">
+          <header class="item__head">
+            <strong>{{ item.quantidade }}x {{ item.nome }}</strong>
+            <em *ngIf="horarioItem(item)">{{ horarioItem(item) }}</em>
+          </header>
+
+          <div class="item__extras" *ngIf="item.adicionais?.length">
+            <ul>
+              <li *ngFor="let adicional of item.adicionais">{{ adicional.nome }}</li>
+            </ul>
+          </div>
+
+          <p class="item__obs-inline" *ngIf="item.observacao">Obs: {{ item.observacao }}</p>
+        </article>
+      </section>
+
+      <button type="button" *ngIf="temNovos(pedido)" (click)="avancar(pedido)">
+        {{ labelAcao(pedido) }}
+      </button>
+      <p class="wait" *ngIf="!temNovos(pedido)">Tudo pronto nesta comanda</p>
+    </article>
+  </div>
+
+  <ng-template #vazio>
+    <p class="empty">Nenhum pedido na cozinha no momento.</p>
+  </ng-template>
+</div>

@@ -1,0 +1,63 @@
+<div class="track" *ngIf="pedido">
+  <header class="track__head">
+    <button type="button" class="track__back" (click)="voltarCardapio()" aria-label="Voltar">‹</button>
+    <div>
+      <h1>Acompanhe seu pedido</h1>
+      <p>{{ pedido.id }}</p>
+    </div>
+  </header>
+
+  <section class="hero">
+    <p class="hero__live" *ngIf="aoVivo">● Ao vivo</p>
+    <p class="hero__status" [class.hero__status--pulse]="statusHighlight">
+      {{ pedidoService.labelStatus(pedido.status) }}
+    </p>
+    <p class="hero__hint" *ngIf="aoVivo">
+      O status atualiza automaticamente quando a cozinha ou a entrega avançam o pedido.
+    </p>
+    <p class="hero__hint" *ngIf="!aoVivo">Pedido encerrado.</p>
+  </section>
+
+  <ol class="steps">
+    <li
+      *ngFor="let etapa of etapas"
+      class="steps__item"
+      [class.steps__item--done]="isConcluida(etapa.status)"
+      [class.steps__item--current]="isAtual(etapa.status)"
+    >
+      <span class="steps__dot"></span>
+      <span>{{ etapa.label }}</span>
+    </li>
+  </ol>
+
+  <section class="card">
+    <h2>Resumo</h2>
+    <article class="item" *ngFor="let item of pedido.itens">
+      <div>
+        <strong>{{ item.quantidade }}x {{ item.nome }}</strong>
+        <p *ngIf="item.adicionais.length">
+          <ng-container *ngFor="let adicional of item.adicionais; let last = last">
+            {{ adicional.nome }}<span *ngIf="!last">, </span>
+          </ng-container>
+        </p>
+      </div>
+      <span>{{ item.precoUnitario * item.quantidade | brl }}</span>
+    </article>
+
+    <div class="row">
+      <span>Pagamento</span>
+      <strong>{{ labelPagamento(pedido.cliente.formaPagamento) }}</strong>
+    </div>
+    <div class="row" *ngIf="pedido.entregadorNome">
+      <span>Entregador</span>
+      <strong>{{ pedido.entregadorNome }}</strong>
+    </div>
+    <div class="row row--total">
+      <span>Total</span>
+      <strong>{{ pedido.total | brl }}</strong>
+    </div>
+  </section>
+
+  <button type="button" class="cta" (click)="voltarCardapio()">Voltar ao cardápio</button>
+  <p class="hint">Para ver de novo depois, use <strong>Meus pedidos</strong> no cardápio.</p>
+</div>

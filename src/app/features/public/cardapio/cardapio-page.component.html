@@ -1,0 +1,235 @@
+<div class="page" *ngIf="!carregando && loja; else estado">
+  <header class="store">
+    <div class="store__cover" [style.backgroundImage]="'url(' + loja.capaUrl + ')'"></div>
+
+    <div class="store__panel">
+      <img class="store__logo" [src]="loja.logoUrl" [alt]="loja.nome" />
+
+      <div class="store__info">
+        <h1>{{ loja.nome }}</h1>
+        <p class="store__cuisine">{{ loja.slogan }} · Lanches</p>
+
+        <div class="store__stats">
+          <span class="store__rating">★ 4.8</span>
+          <span class="store__dot">·</span>
+          <span class="store__open" *ngIf="loja.aberta">Aberto agora</span>
+          <span *ngIf="!loja.aberta">Fechado</span>
+          <span class="store__dot">·</span>
+          <span>{{ loja.horario }}</span>
+        </div>
+
+        <div class="store__delivery">
+          <span>{{ labelCanal }}</span>
+          <span class="store__dot">·</span>
+          <span>{{ loja.tempoEntregaMin }}–{{ loja.tempoEntregaMin + 15 }} min</span>
+          <span class="store__dot" *ngIf="tipoPedido === 'delivery'">·</span>
+          <span *ngIf="tipoPedido === 'delivery'">{{ loja.taxaEntrega | brl }}</span>
+        </div>
+      </div>
+
+      <div class="store__modes" *ngIf="tipoPedido !== 'mesa'" role="tablist">
+        <button
+          type="button"
+          role="tab"
+          class="store__mode"
+          [class.store__mode--on]="tipoPedido === 'delivery'"
+          (click)="escolherModalidade('delivery')"
+        >
+          Entrega
+        </button>
+        <button
+          type="button"
+          role="tab"
+          class="store__mode"
+          [class.store__mode--on]="tipoPedido === 'retirada'"
+          (click)="escolherModalidade('retirada')"
+        >
+          Retirada
+        </button>
+      </div>
+
+      <button
+        type="button"
+        class="store__orders"
+        (click)="abrirMeusPedidos()"
+        [disabled]="!meusPedidos.length"
+      >
+        <span>Meus pedidos</span>
+        <strong *ngIf="pedidoAtivo">{{ pedidoService.labelStatus(pedidoAtivo.status) }}</strong>
+        <strong *ngIf="!pedidoAtivo && meusPedidos.length">{{ meusPedidos.length }} pedido(s)</strong>
+        <strong *ngIf="!meusPedidos.length">Nenhum ainda</strong>
+      </button>
+    </div>
+  </header>
+
+  <div class="active-order" *ngIf="pedidoAtivo" (click)="acompanharPedido(pedidoAtivo)">
+    <div>
+      <strong>Pedido em andamento</strong>
+      <span>{{ pedidoAtivo.id }} · {{ pedidoService.labelStatus(pedidoAtivo.status) }}</span>
+    </div>
+    <em>Acompanhar</em>
+  </div>
+
+  <div class="sticky">
+    <label class="search">
+      <svg class="search__icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+      </svg>
+      <input
+        type="search"
+        [value]="busca"
+        (input)="onBuscaChange($any($event.target).value)"
+        [placeholder]="'Buscar no cardápio de ' + loja.nome"
+        autocomplete="off"
+      />
+    </label>
+
+    <nav class="cats" aria-label="Categorias">
+      <button
+        type="button"
+        class="cats__btn"
+        [class.cats__btn--on]="categoriaAtiva === null"
+        (click)="selecionarCategoria(null)"
+      >
+        Todos
+      </button>
+      <button
+        type="button"
+        class="cats__btn"
+        *ngFor="let categoria of categorias"
+        [class.cats__btn--on]="categoriaAtiva === categoria.id"
+        (click)="selecionarCategoria(categoria.id)"
+      >
+        {{ categoria.nome }}
+      </button>
+    </nav>
+  </div>
+
+  <main class="menu" [class.menu--cart]="quantidadeCarrinho > 0">
+    <section class="group" *ngFor="let grupo of grupos" [id]="'cat-' + grupo.categoria.id">
+      <h2>{{ grupo.categoria.nome }}</h2>
+      <div class="list">
+        <app-produto-card
+          *ngFor="let produto of grupo.produtos"
+          [produto]="produto"
+          (selecionar)="abrirProduto($event)"
+        ></app-produto-card>
+      </div>
+    </section>
+
+    <p class="empty" *ngIf="!grupos.length">Nenhum item encontrado.</p>
+  </main>
+
+  <app-carrinho-fab
+    [quantidade]="quantidadeCarrinho"
+    [subtotal]="subtotalCarrinho"
+    (abrir)="abrirCarrinho()"
+  ></app-carrinho-fab>
+
+  <app-produto-modal
+    [aberto]="modalAberto"
+    [produto]="produtoSelecionado"
+    (fechar)="fecharModal()"
+    (adicionar)="adicionarAoCarrinho($event)"
+  ></app-produto-modal>
+
+  <div class="bag-overlay" *ngIf="carrinhoAberto" (click)="onCarrinhoBackdrop($event)">
+    <aside class="bag" role="dialog" aria-label="Sacola">
+      <header class="bag__head">
+        <button type="button" class="bag__back" (click)="fecharCarrinho()" aria-label="Voltar">‹</button>
+        <div>
+          <h2>Sacola</h2>
+          <p>{{ loja.nome }}</p>
+        </div>
+      </header>
+
+      <div class="bag__list" *ngIf="itensCarrinho.length; else cartEmpty">
+        <article class="bag__item" *ngFor="let item of itensCarrinho">
+          <div class="bag__info">
+            <h3>{{ item.quantidade }}x {{ item.nome }}</h3>
+            <p *ngIf="item.adicionais.length">
+              {{ item.adicionais[0].nome }}<span *ngIf="item.adicionais.length > 1"> +{{ item.adicionais.length - 1 }}</span>
+            </p>
+            <button type="button" class="bag__remove" (click)="removerItem(item.id)">Remover</button>
+          </div>
+          <div class="bag__side">
+            <strong>{{ item.precoUnitario * item.quantidade | brl }}</strong>
+            <app-quantidade-input
+              [value]="item.quantidade"
+              [min]="0"
+              (valueChange)="atualizarQuantidadeItem(item.id, $event)"
+            ></app-quantidade-input>
+          </div>
+        </article>
+      </div>
+
+      <ng-template #cartEmpty>
+        <div class="bag__empty">
+          <p>Sua sacola está vazia</p>
+          <button type="button" class="bag__keep" (click)="fecharCarrinho()">Voltar ao cardápio</button>
+        </div>
+      </ng-template>
+
+      <footer class="bag__foot" *ngIf="itensCarrinho.length">
+        <div class="bag__row">
+          <span>Subtotal</span>
+          <strong>{{ subtotalCarrinho | brl }}</strong>
+        </div>
+        <div class="bag__row bag__row--muted" *ngIf="tipoPedido === 'delivery'">
+          <span>Taxa de entrega</span>
+          <span>{{ loja.taxaEntrega | brl }}</span>
+        </div>
+        <button type="button" class="bag__cta" (click)="continuarPedido()">
+          Continuar · {{ (tipoPedido === 'delivery' ? subtotalCarrinho + loja.taxaEntrega : subtotalCarrinho) | brl }}
+        </button>
+      </footer>
+    </aside>
+  </div>
+
+  <div class="toast" *ngIf="toastVisivel">Item adicionado à sacola</div>
+
+  <div class="orders-overlay" *ngIf="pedidosAberto" (click)="onPedidosBackdrop($event)">
+    <aside class="orders" role="dialog" aria-label="Meus pedidos">
+      <header class="orders__head">
+        <button type="button" class="orders__back" (click)="fecharMeusPedidos()" aria-label="Fechar">‹</button>
+        <div>
+          <h2>Meus pedidos</h2>
+          <p>{{ loja.nome }}</p>
+        </div>
+      </header>
+
+      <div class="orders__list" *ngIf="meusPedidos.length; else semPedidos">
+        <button
+          type="button"
+          class="orders__item"
+          *ngFor="let pedido of meusPedidos"
+          (click)="acompanharPedido(pedido)"
+        >
+          <div>
+            <strong>{{ pedido.id }}</strong>
+            <span>{{ pedidoService.labelStatus(pedido.status) }} · {{ pedido.tipo }}</span>
+            <small>{{ pedido.itens.length }} item(ns)</small>
+          </div>
+          <em>{{ pedido.total | brl }}</em>
+        </button>
+      </div>
+
+      <ng-template #semPedidos>
+        <p class="orders__empty">Você ainda não fez pedidos nesta loja.</p>
+      </ng-template>
+    </aside>
+  </div>
+
+  <a class="staff-link" routerLink="/painel/login">Área da loja</a>
+</div>
+
+<ng-template #estado>
+  <div class="state">
+    <p *ngIf="carregando">Carregando cardápio...</p>
+    <div *ngIf="!carregando && erro">
+      <h1>Restaurante não encontrado</h1>
+      <p>{{ erro }}</p>
+      <button type="button" class="state__btn" (click)="irParaInicio()">Ver Chama Burger</button>
+    </div>
+  </div>
+</ng-template>

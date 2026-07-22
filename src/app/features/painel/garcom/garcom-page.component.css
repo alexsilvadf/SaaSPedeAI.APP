@@ -1,0 +1,89 @@
+.page header h1 { margin: 0; }
+.page header p { margin: 0.25rem 0 1rem; color: #717171; }
+
+.layout {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 1rem;
+}
+
+.mesas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 0.65rem;
+}
+
+.mesa {
+  border: 1px solid #e8e8e8;
+  border-radius: 12px;
+  background: #fff;
+  padding: 0.85rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.mesa strong { display: block; }
+.mesa span { color: #717171; font-size: 0.75rem; }
+.mesa--on { outline: 2px solid #ea1d2c; }
+.mesa[data-status='ocupada'] { border-color: #e7a74e; }
+.mesa[data-status='aguardando_pagamento'] { border-color: #ea1d2c; background: #fff5f5; }
+
+.painel {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.painel h2 { margin: 0; }
+.painel > p { margin: 0.25rem 0 0.85rem; color: #717171; }
+
+.actions, .lancar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-bottom: 0.85rem;
+}
+
+button {
+  border: 0;
+  border-radius: 8px;
+  padding: 0.7rem 0.9rem;
+  background: #ea1d2c;
+  color: #fff;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+button.ghost {
+  background: #fff;
+  color: #ea1d2c;
+  border: 1px solid #ea1d2c;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+select, input {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 0.55rem;
+  min-width: 140px;
+}
+
+.pedido {
+  border-top: 1px solid #f0f0f0;
+  padding-top: 0.85rem;
+}
+
+.pedido h3 { margin: 0 0 0.5rem; font-size: 0.95rem; }
+.pedido ul { margin: 0; padding-left: 1rem; }
+.msg { color: #50a773; font-weight: 700; }
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+}

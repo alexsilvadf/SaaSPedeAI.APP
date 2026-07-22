@@ -1,0 +1,33 @@
+<div class="page">
+  <header>
+    <h1>Dashboard</h1>
+    <p>Visão do dia · Chama Burger</p>
+  </header>
+
+  <div class="kpis">
+    <article><span>Pedidos abertos</span><strong>{{ abertos }}</strong></article>
+    <article><span>Em produção</span><strong>{{ producao }}</strong></article>
+    <article><span>Concluídos</span><strong>{{ concluidos }}</strong></article>
+    <article><span>Faturamento</span><strong>{{ faturamento | brl }}</strong></article>
+    <article><span>Ticket médio</span><strong>{{ ticketMedio | brl }}</strong></article>
+  </div>
+
+  <div class="cols">
+    <section class="card">
+      <h2>Mais vendidos</h2>
+      <p *ngFor="let item of topProdutos">{{ item.qtd }}x {{ item.nome }}</p>
+      <p *ngIf="!topProdutos.length" class="empty">Sem vendas ainda.</p>
+    </section>
+    <section class="card">
+      <h2>Pedidos recentes</h2>
+      <article class="row" *ngFor="let pedido of recentes">
+        <div>
+          <strong>{{ pedido.id }}</strong>
+          <span>{{ pedido.tipo }} · {{ pedido.status }}</span>
+        </div>
+        <strong>{{ pedido.total | brl }}</strong>
+      </article>
+      <p *ngIf="!recentes.length" class="empty">Nenhum pedido hoje.</p>
+    </section>
+  </div>
+</div>

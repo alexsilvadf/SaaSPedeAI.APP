@@ -1,0 +1,23 @@
+<article
+  class="item"
+  [class.item--off]="!produto.disponivel"
+  [attr.aria-disabled]="!produto.disponivel"
+  (click)="onSelect()"
+  (keydown.enter)="onSelect()"
+  tabindex="0"
+  role="button"
+>
+  <div class="item__body">
+    <h3>{{ produto.nome }}</h3>
+    <p>{{ produto.descricao }}</p>
+    <div class="item__price">
+      <strong>{{ produto.preco | brl }}</strong>
+      <span *ngIf="produto.destaque && produto.disponivel" class="item__badge">Mais pedido</span>
+      <span *ngIf="!produto.disponivel" class="item__badge item__badge--off">Indisponível</span>
+    </div>
+  </div>
+
+  <div class="item__media">
+    <img [src]="produto.imagemUrl" [alt]="produto.nome" loading="lazy" />
+  </div>
+</article>

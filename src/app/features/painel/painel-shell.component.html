@@ -1,0 +1,32 @@
+<div class="shell" *ngIf="usuario">
+  <aside class="side">
+    <div class="side__brand">
+      <strong>PedeAI</strong>
+      <span>Painel</span>
+    </div>
+
+    <nav>
+      <a
+        *ngFor="let item of nav"
+        [routerLink]="item.path"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: item.path === '/painel/admin' }"
+        [hidden]="!podeVer(item)"
+      >
+        {{ item.label }}
+        <span class="badge" *ngIf="badge(item) > 0">{{ badge(item) }}</span>
+      </a>
+    </nav>
+
+    <div class="side__user">
+      <strong>{{ usuario.nome }}</strong>
+      <span>{{ usuario.perfil }}</span>
+      <button type="button" (click)="sair()">Sair</button>
+      <a routerLink="/chama-burger">Ver cardápio</a>
+    </div>
+  </aside>
+
+  <main class="content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

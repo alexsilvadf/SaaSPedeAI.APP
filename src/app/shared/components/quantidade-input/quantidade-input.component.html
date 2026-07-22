@@ -1,0 +1,9 @@
+<div class="qty" role="group" aria-label="Quantidade">
+  <button type="button" class="qty__btn" (click)="diminuir()" [disabled]="value <= min" aria-label="Diminuir">
+    −
+  </button>
+  <span class="qty__value">{{ value }}</span>
+  <button type="button" class="qty__btn" (click)="aumentar()" [disabled]="value >= max" aria-label="Aumentar">
+    +
+  </button>
+</div>

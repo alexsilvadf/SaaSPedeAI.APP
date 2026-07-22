@@ -1,0 +1,62 @@
+<div class="overlay" *ngIf="aberto && produto" (click)="onBackdrop($event)" role="presentation">
+  <section class="sheet" role="dialog" aria-modal="true" [attr.aria-label]="produto.nome">
+    <button type="button" class="sheet__close" (click)="fechar.emit()" aria-label="Fechar">
+      <span aria-hidden="true">×</span>
+    </button>
+
+    <div class="sheet__hero">
+      <img [src]="produto.imagemUrl" [alt]="produto.nome" />
+    </div>
+
+    <div class="sheet__content">
+      <header class="sheet__header">
+        <h2>{{ produto.nome }}</h2>
+        <p>{{ produto.descricao }}</p>
+        <strong>A partir de {{ produto.preco | brl }}</strong>
+      </header>
+
+      <section class="grupo" *ngFor="let grupo of produto.gruposAdicionais">
+        <div class="grupo__title">
+          <div>
+            <h3>{{ grupo.nome }}</h3>
+            <small *ngIf="grupo.max > 1">Escolha até {{ grupo.max }}</small>
+          </div>
+          <span [class.grupo__tag--req]="grupo.obrigatorio">
+            {{ grupo.obrigatorio ? 'Obrigatório' : 'Opcional' }}
+          </span>
+        </div>
+
+        <button
+          type="button"
+          class="opcao"
+          *ngFor="let opcao of grupo.opcoes"
+          [class.opcao--on]="isSelecionado(grupo.id, opcao.id)"
+          (click)="toggleAdicional(grupo, opcao)"
+        >
+          <span class="opcao__check" aria-hidden="true"></span>
+          <span class="opcao__name">{{ opcao.nome }}</span>
+          <em>{{ opcao.preco > 0 ? ('+ ' + (opcao.preco | brl)) : 'Grátis' }}</em>
+        </button>
+      </section>
+
+      <label class="obs">
+        <span>Observação</span>
+        <textarea
+          [(ngModel)]="observacao"
+          rows="2"
+          maxlength="140"
+          placeholder="Ex.: sem cebola, ponto mal passado..."
+        ></textarea>
+      </label>
+
+      <p class="erro" *ngIf="erroValidacao">{{ erroValidacao }}</p>
+    </div>
+
+    <footer class="sheet__footer">
+      <app-quantidade-input [value]="quantidade" (valueChange)="quantidade = $event"></app-quantidade-input>
+      <button type="button" class="add-btn" (click)="confirmar()">
+        Adicionar · {{ totalPedido | brl }}
+      </button>
+    </footer>
+  </section>
+</div>

@@ -1,0 +1,28 @@
+<div class="login">
+  <form class="card" (ngSubmit)="entrar()">
+    <h1>PedeAI Painel</h1>
+    <p>Acesse com seu perfil operacional</p>
+
+    <label>
+      E-mail
+      <input type="email" [(ngModel)]="email" name="email" required />
+    </label>
+    <label>
+      Senha
+      <input type="password" [(ngModel)]="senha" name="senha" required />
+    </label>
+
+    <p class="erro" *ngIf="erro">{{ erro }}</p>
+
+    <button type="submit" [disabled]="carregando">
+      {{ carregando ? 'Entrando...' : 'Entrar' }}
+    </button>
+  </form>
+
+  <section class="demos">
+    <h2>Acessos demo</h2>
+    <button type="button" *ngFor="let demo of demos" (click)="usar(demo)">
+      {{ demo.nome }} · {{ demo.perfil }}
+    </button>
+  </section>
+</div>

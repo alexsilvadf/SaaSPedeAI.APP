@@ -1,0 +1,10 @@
+<button
+  *ngIf="visivel"
+  type="button"
+  class="bag-bar"
+  (click)="abrir.emit()"
+>
+  <span class="bag-bar__qty">{{ quantidade }}</span>
+  <span class="bag-bar__label">Ver Pedido</span>
+  <span class="bag-bar__total">{{ subtotal | brl }}</span>
+</button>

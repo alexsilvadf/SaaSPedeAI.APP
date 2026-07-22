@@ -1,0 +1,85 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: #f3f4f6;
+}
+
+.login {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.card,
+.demos {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.card h1 {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.card p {
+  margin: 0.35rem 0 1rem;
+  color: #717171;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 0.85rem;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+input {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 0.8rem;
+  font: inherit;
+  font-weight: 400;
+}
+
+button[type='submit'] {
+  width: 100%;
+  border: 0;
+  border-radius: 8px;
+  padding: 0.9rem;
+  background: #ea1d2c;
+  color: #fff;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.erro {
+  color: #ea1d2c;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.demos {
+  margin-top: 1rem;
+}
+
+.demos h2 {
+  margin: 0 0 0.75rem;
+  font-size: 0.95rem;
+}
+
+.demos button {
+  display: block;
+  width: 100%;
+  margin-bottom: 0.45rem;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  padding: 0.7rem 0.8rem;
+  background: #fafafa;
+  text-align: left;
+  cursor: pointer;
+  font-weight: 700;
+}

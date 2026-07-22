@@ -1,0 +1,60 @@
+<div class="page">
+  <header>
+    <h1>Garçom · Mesas</h1>
+    <p>Abra mesas, lance itens e peça a conta</p>
+  </header>
+
+  <div class="layout">
+    <section class="mesas">
+      <button
+        type="button"
+        class="mesa"
+        *ngFor="let mesa of mesas"
+        [class.mesa--on]="mesaSelecionada?.id === mesa.id"
+        [attr.data-status]="mesa.status"
+        (click)="selecionar(mesa)"
+      >
+        <strong>Mesa {{ mesa.numero }}</strong>
+        <span>{{ labelStatus(mesa.status) }}</span>
+      </button>
+    </section>
+
+    <section class="painel" *ngIf="mesaSelecionada as mesa">
+      <h2>Mesa {{ mesa.numero }}</h2>
+      <p>{{ labelStatus(mesa.status) }}</p>
+
+      <div class="actions">
+        <button type="button" *ngIf="mesa.status === 'livre'" (click)="abrirMesa()">Abrir mesa</button>
+        <button type="button" *ngIf="mesa.pedidoAtivoId" class="ghost" (click)="pedirConta()">Pedir conta</button>
+      </div>
+
+      <div class="lancar" *ngIf="mesa.pedidoAtivoId">
+        <label>
+          Produto
+          <select [(ngModel)]="produtoId">
+            <option *ngFor="let produto of produtos" [value]="produto.id">
+              {{ produto.nome }} · {{ produto.preco | brl }}
+            </option>
+          </select>
+        </label>
+        <label>
+          Qtd
+          <input type="number" min="1" [(ngModel)]="quantidade" />
+        </label>
+        <button type="button" (click)="adicionarItem()">Adicionar item</button>
+      </div>
+
+      <div class="pedido" *ngIf="pedidoDaMesa(mesa) as pedido">
+        <h3>{{ pedido.id }} · {{ pedido.total | brl }}</h3>
+        <ul>
+          <li *ngFor="let item of pedido.itens">
+            {{ item.quantidade }}x {{ item.nome }}
+          </li>
+        </ul>
+        <p *ngIf="!pedido.itens.length">Nenhum item lançado ainda.</p>
+      </div>
+
+      <p class="msg" *ngIf="mensagem">{{ mensagem }}</p>
+    </section>
+  </div>
+</div>

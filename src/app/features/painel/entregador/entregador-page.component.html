@@ -1,0 +1,73 @@
+<div class="page" *ngIf="entregador; else semVinculo">
+  <header>
+    <div>
+      <h1>Minhas entregas</h1>
+      <p>{{ entregador.nome }} · atualização em tempo real</p>
+    </div>
+    <button type="button" class="ghost" *ngIf="notificacoes.length" (click)="marcarTodasLidas()">
+      Limpar avisos ({{ notificacoes.length }})
+    </button>
+  </header>
+
+  <section class="alertas" *ngIf="notificacoes.length">
+    <article class="alerta" *ngFor="let ntf of notificacoes">
+      <div>
+        <strong>{{ ntf.titulo }}</strong>
+        <p>{{ ntf.mensagem }}</p>
+      </div>
+      <button type="button" class="ghost" (click)="dispensarNotificacao(ntf.id)">Ok</button>
+    </article>
+  </section>
+
+  <section class="card">
+    <h2>Aguardando você entregar</h2>
+    <article class="entrega" *ngFor="let pedido of minhasEntregas">
+      <div class="entrega__top">
+        <strong>{{ pedido.id }}</strong>
+        <span>Saiu para entrega</span>
+      </div>
+      <p><strong>Cliente:</strong> {{ pedido.cliente.nome }} · {{ pedido.cliente.telefone }}</p>
+      <p><strong>Endereço:</strong> {{ pedido.cliente.endereco || 'Não informado' }}</p>
+      <p *ngIf="pedido.cliente.complemento"><strong>Complemento:</strong> {{ pedido.cliente.complemento }}</p>
+      <p *ngIf="pedido.cliente.referencia"><strong>Referência:</strong> {{ pedido.cliente.referencia }}</p>
+      <p *ngIf="pedido.cliente.observacao"><strong>Obs.:</strong> {{ pedido.cliente.observacao }}</p>
+
+      <ul>
+        <li *ngFor="let item of pedido.itens">
+          {{ item.quantidade }}x {{ item.nome }}
+          <small *ngIf="item.adicionais.length">
+            (
+            <ng-container *ngFor="let adicional of item.adicionais; let last = last">
+              {{ adicional.nome }}<span *ngIf="!last">, </span>
+            </ng-container>
+            )
+          </small>
+        </li>
+      </ul>
+
+      <div class="entrega__foot">
+        <strong>{{ pedido.total | brl }} · {{ pedido.cliente.formaPagamento }}</strong>
+        <button type="button" (click)="marcarEntregue(pedido)">Marcar como entregue</button>
+      </div>
+    </article>
+    <p *ngIf="!minhasEntregas.length" class="empty">Nenhuma entrega atribuída a você agora.</p>
+  </section>
+
+  <section class="card">
+    <h2>Entregas finalizadas</h2>
+    <article class="hist" *ngFor="let pedido of historico">
+      <strong>{{ pedido.id }}</strong>
+      <span>{{ pedido.cliente.endereco }} · {{ pedido.total | brl }}</span>
+    </article>
+    <p *ngIf="!historico.length" class="empty">Sem histórico ainda.</p>
+  </section>
+</div>
+
+<ng-template #semVinculo>
+  <div class="empty-page">
+    <h1>Entregador não vinculado</h1>
+    <p>Seu usuário não está ligado a um cadastro de entregador.</p>
+  </div>
+</ng-template>
+
+<div class="toast" *ngIf="toast">{{ toast }}</div>

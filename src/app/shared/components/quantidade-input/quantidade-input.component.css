@@ -1,0 +1,35 @@
+.qty {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.qty__btn {
+  width: 2rem;
+  height: 2rem;
+  border: 0;
+  background: transparent;
+  color: #ea1d2c;
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.qty__btn:disabled {
+  color: #cfcfcf;
+  cursor: not-allowed;
+}
+
+.qty__value {
+  min-width: 1.4rem;
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #1a1a1a;
+  font-variant-numeric: tabular-nums;
+}

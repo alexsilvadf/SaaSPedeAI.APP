@@ -1,0 +1,55 @@
+<div class="page">
+  <header>
+    <h1>Despacho de Delivery</h1>
+    <p>Escolha o entregador. Ele será notificado e marcará a entrega como concluída.</p>
+  </header>
+
+  <p class="banner" *ngIf="mensagem">{{ mensagem }}</p>
+
+  <div class="cols">
+    <section class="card">
+      <h2>Prontos para sair</h2>
+      <article class="row" *ngFor="let pedido of prontos">
+        <div>
+          <strong>{{ pedido.id }}</strong>
+          <span>{{ pedido.cliente.nome }} · {{ pedido.cliente.endereco }}</span>
+        </div>
+        <div class="actions">
+          <select [(ngModel)]="selecionados[pedido.id]">
+            <option value="">Entregador</option>
+            <option *ngFor="let ent of entregadores" [value]="ent.id" [disabled]="!ent.disponivel">
+              {{ ent.nome }}{{ ent.disponivel ? '' : ' (indisponível)' }}
+            </option>
+          </select>
+          <button type="button" (click)="despachar(pedido)">Atribuir e notificar</button>
+        </div>
+      </article>
+      <p *ngIf="!prontos.length" class="empty">Nenhum delivery pronto.</p>
+    </section>
+
+    <section class="card">
+      <h2>Em rota (aguardando entregador)</h2>
+      <article class="row" *ngFor="let pedido of emRota">
+        <div>
+          <strong>{{ pedido.id }}</strong>
+          <span>{{ pedido.entregadorNome }} · {{ pedido.cliente.endereco }}</span>
+        </div>
+        <em class="tag">Aguardando confirmação do entregador</em>
+      </article>
+      <p *ngIf="!emRota.length" class="empty">Nenhuma entrega em andamento.</p>
+    </section>
+  </div>
+
+  <section class="card">
+    <h2>Entregadores</h2>
+    <article class="row" *ngFor="let ent of entregadores">
+      <div>
+        <strong>{{ ent.nome }}</strong>
+        <span>{{ ent.telefone }}</span>
+      </div>
+      <button type="button" class="ghost" (click)="toggleEntregador(ent.id)">
+        {{ ent.disponivel ? 'Disponível' : 'Indisponível' }}
+      </button>
+    </article>
+  </section>
+</div>

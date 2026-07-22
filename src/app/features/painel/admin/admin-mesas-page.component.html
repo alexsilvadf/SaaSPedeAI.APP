@@ -1,0 +1,22 @@
+<div class="page">
+  <header>
+    <div>
+      <h1>Mesas</h1>
+      <p>Cadastro e status das mesas</p>
+    </div>
+    <div class="add">
+      <input type="number" [(ngModel)]="novoNumero" min="1" />
+      <button type="button" (click)="adicionar()">Adicionar</button>
+    </div>
+  </header>
+
+  <section class="grid">
+    <article class="mesa" *ngFor="let mesa of mesas" [attr.data-status]="mesa.status">
+      <strong>Mesa {{ mesa.numero }}</strong>
+      <span>{{ mesa.status }}</span>
+      <button type="button" class="ghost" *ngIf="mesa.status !== 'livre'" (click)="liberar(mesa)">
+        Liberar
+      </button>
+    </article>
+  </section>
+</div>

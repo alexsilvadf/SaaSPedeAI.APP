@@ -1,0 +1,57 @@
+<div class="page">
+  <header>
+    <h1>Caixa</h1>
+    <p>{{ aberto ? ('Aberto · saldo ' + (saldo | brl)) : 'Caixa fechado' }}</p>
+  </header>
+
+  <section class="card controls">
+    <ng-container *ngIf="!aberto; else abertoTpl">
+      <label>
+        Valor de abertura
+        <input type="number" [(ngModel)]="valorAbertura" min="0" />
+      </label>
+      <button type="button" (click)="abrir()">Abrir caixa</button>
+    </ng-container>
+    <ng-template #abertoTpl>
+      <label>
+        Sangria
+        <input type="number" [(ngModel)]="valorSangria" min="0" />
+      </label>
+      <label>
+        Motivo
+        <input type="text" [(ngModel)]="descSangria" placeholder="Troco, cofre..." />
+      </label>
+      <button type="button" class="ghost" (click)="sangria()">Registrar sangria</button>
+      <button type="button" class="danger" (click)="fechar()">Fechar caixa</button>
+    </ng-template>
+  </section>
+
+  <div class="cols">
+    <section class="card">
+      <h2>A receber</h2>
+      <article class="row" *ngFor="let pedido of aReceber">
+        <div>
+          <strong>{{ pedido.id }}</strong>
+          <span>{{ pedido.cliente.nome }} · {{ pedido.tipo }}</span>
+        </div>
+        <div class="row__actions">
+          <strong>{{ pedido.total | brl }}</strong>
+          <button type="button" [disabled]="!aberto" (click)="receber(pedido)">Receber</button>
+        </div>
+      </article>
+      <p *ngIf="!aReceber.length" class="empty">Nenhum pagamento pendente.</p>
+    </section>
+
+    <section class="card">
+      <h2>Movimentações</h2>
+      <article class="row" *ngFor="let mov of movimentos">
+        <div>
+          <strong>{{ mov.tipo }}</strong>
+          <span>{{ mov.descricao }}</span>
+        </div>
+        <strong>{{ mov.valor | brl }}</strong>
+      </article>
+      <p *ngIf="!movimentos.length" class="empty">Sem movimentos.</p>
+    </section>
+  </div>
+</div>

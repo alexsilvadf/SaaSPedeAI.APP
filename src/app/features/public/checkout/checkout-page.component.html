@@ -1,0 +1,87 @@
+<div class="checkout" *ngIf="loja">
+  <header class="checkout__head">
+    <button type="button" class="checkout__back" (click)="voltar()" aria-label="Voltar">‹</button>
+    <div>
+      <h1>Finalize seu pedido</h1>
+      <p>{{ loja.nome }} · {{ tituloCanal }}</p>
+    </div>
+  </header>
+
+  <section class="card">
+    <h2>Seus itens</h2>
+    <article class="item" *ngFor="let item of itens">
+      <div>
+        <strong>{{ item.quantidade }}x {{ item.nome }}</strong>
+        <p *ngIf="item.adicionais.length">
+          <ng-container *ngFor="let adicional of item.adicionais; let last = last">
+            {{ adicional.nome }}<span *ngIf="!last">, </span>
+          </ng-container>
+        </p>
+      </div>
+      <span>{{ item.precoUnitario * item.quantidade | brl }}</span>
+    </article>
+  </section>
+
+  <form class="card" (ngSubmit)="confirmar()" novalidate>
+    <h2>Seus dados</h2>
+
+    <label>
+      Nome
+      <input type="text" name="nome" [(ngModel)]="form.nome" required autocomplete="name" placeholder="Como devemos te chamar?" />
+    </label>
+
+    <label>
+      Telefone
+      <input type="tel" name="telefone" [(ngModel)]="form.telefone" required autocomplete="tel" placeholder="(00) 00000-0000" />
+    </label>
+
+    <ng-container *ngIf="tipo === 'delivery'">
+      <label>
+        Endereço de entrega
+        <input type="text" name="endereco" [(ngModel)]="form.endereco" required placeholder="Rua, número e bairro" />
+      </label>
+      <label>
+        Complemento
+        <input type="text" name="complemento" [(ngModel)]="form.complemento" placeholder="Apto, bloco..." />
+      </label>
+      <label>
+        Ponto de referência
+        <input type="text" name="referencia" [(ngModel)]="form.referencia" placeholder="Próximo a..." />
+      </label>
+    </ng-container>
+
+    <fieldset>
+      <legend>Forma de pagamento</legend>
+      <label class="pay"><input type="radio" name="pagamento" value="pix" [(ngModel)]="form.formaPagamento" /> PIX</label>
+      <label class="pay"><input type="radio" name="pagamento" value="dinheiro" [(ngModel)]="form.formaPagamento" /> Dinheiro</label>
+      <label class="pay"><input type="radio" name="pagamento" value="debito" [(ngModel)]="form.formaPagamento" /> Débito</label>
+      <label class="pay"><input type="radio" name="pagamento" value="credito" [(ngModel)]="form.formaPagamento" /> Crédito</label>
+    </fieldset>
+
+    <label>
+      Observação do pedido
+      <textarea name="observacao" rows="2" [(ngModel)]="form.observacao" placeholder="Algo que a cozinha precisa saber?"></textarea>
+    </label>
+
+    <p class="erro" *ngIf="erro">{{ erro }}</p>
+  </form>
+
+  <section class="summary">
+    <div class="summary__row">
+      <span>Subtotal</span>
+      <strong>{{ subtotal | brl }}</strong>
+    </div>
+    <div class="summary__row" *ngIf="tipo === 'delivery'">
+      <span>Taxa de entrega</span>
+      <span>{{ taxaEntrega | brl }}</span>
+    </div>
+    <div class="summary__row summary__total">
+      <span>Total</span>
+      <strong>{{ total | brl }}</strong>
+    </div>
+
+    <button type="button" class="summary__cta" [disabled]="enviando" (click)="confirmar()">
+      {{ enviando ? 'Enviando...' : ('Fazer pedido · ' + (total | brl)) }}
+    </button>
+  </section>
+</div>
