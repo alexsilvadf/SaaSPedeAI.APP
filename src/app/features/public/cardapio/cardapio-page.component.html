@@ -6,6 +6,7 @@
       <img class="store__logo" [src]="loja.logoUrl" [alt]="loja.nome" />
 
       <div class="store__info">
+        <p class="store__welcome" *ngIf="nomeCliente">Bem-vindo, {{ nomeCliente }}</p>
         <h1>{{ loja.nome }}</h1>
         <p class="store__cuisine">{{ loja.slogan }} · Lanches</p>
 

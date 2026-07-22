@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, combineLatest } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { CarrinhoService } from '../../../core/services/carrinho.service';
+import { ClientePreferenciasService } from '../../../core/services/cliente-preferencias.service';
 import { LojaService } from '../../../core/services/loja.service';
 import { PedidoService } from '../../../core/services/pedido.service';
 import { DadosCliente, ItemCarrinho, Loja, TipoPedido } from '../../../core/models';
@@ -22,6 +23,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
   subtotal = 0;
   enviando = false;
   erro = '';
+  dadosSalvos = false;
 
   form: DadosCliente = {
     nome: '',
@@ -40,10 +42,13 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
     private readonly router: Router,
     private readonly lojaService: LojaService,
     private readonly carrinhoService: CarrinhoService,
-    private readonly pedidoService: PedidoService
+    private readonly pedidoService: PedidoService,
+    private readonly clientePreferencias: ClientePreferenciasService
   ) {}
 
   ngOnInit(): void {
+    this.preencherDadosSalvos();
+
     this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe((params) => {
       this.lojaSlug = params.get('lojaSlug') ?? '';
       this.lojaService.getBySlug(this.lojaSlug).subscribe({
@@ -121,6 +126,24 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
 
     this.enviando = true;
 
+    const cliente: DadosCliente = {
+      ...this.form,
+      nome: this.form.nome.trim(),
+      telefone: this.form.telefone.trim(),
+      endereco: this.form.endereco?.trim(),
+      complemento: this.form.complemento?.trim(),
+      referencia: this.form.referencia?.trim(),
+      observacao: this.form.observacao?.trim()
+    };
+
+    this.clientePreferencias.salvar({
+      nome: cliente.nome,
+      telefone: cliente.telefone,
+      endereco: cliente.endereco,
+      complemento: cliente.complemento,
+      referencia: cliente.referencia
+    });
+
     const pedido = this.pedidoService.criarPedido({
       lojaSlug: this.loja.slug,
       tipo: this.tipo,
@@ -129,17 +152,26 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
       taxaEntrega: this.taxaEntrega,
       mesaId: this.mesaId,
       mesaNumero: this.mesaNumero,
-      cliente: {
-        ...this.form,
-        nome: this.form.nome.trim(),
-        telefone: this.form.telefone.trim(),
-        endereco: this.form.endereco?.trim(),
-        complemento: this.form.complemento?.trim(),
-        referencia: this.form.referencia?.trim(),
-        observacao: this.form.observacao?.trim()
-      }
+      cliente
     });
 
     void this.router.navigate(['/', this.loja.slug, 'pedido', pedido.id]);
+  }
+
+  private preencherDadosSalvos(): void {
+    const salvos = this.clientePreferencias.carregar();
+    if (!salvos) {
+      return;
+    }
+
+    this.dadosSalvos = true;
+    this.form = {
+      ...this.form,
+      nome: salvos.nome,
+      telefone: salvos.telefone,
+      endereco: salvos.endereco ?? '',
+      complemento: salvos.complemento ?? '',
+      referencia: salvos.referencia ?? ''
+    };
   }
 }

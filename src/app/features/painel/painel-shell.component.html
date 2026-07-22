@@ -7,22 +7,22 @@
 
     <nav>
       <a
-        *ngFor="let item of nav"
+        *ngFor="let item of navVisivel"
         [routerLink]="item.path"
         routerLinkActive="active"
         [routerLinkActiveOptions]="{ exact: item.path === '/painel/admin' }"
-        [hidden]="!podeVer(item)"
       >
         {{ item.label }}
         <span class="badge" *ngIf="badge(item) > 0">{{ badge(item) }}</span>
       </a>
+
+      <a *ngIf="mostrarVerCardapio" routerLink="/chama-burger" class="nav-extra">Ver cardápio</a>
+      <button type="button" class="nav-extra nav-extra--btn" (click)="sair()">Sair</button>
     </nav>
 
     <div class="side__user">
       <strong>{{ usuario.nome }}</strong>
       <span>{{ usuario.perfil }}</span>
-      <button type="button" (click)="sair()">Sair</button>
-      <a routerLink="/chama-burger">Ver cardápio</a>
     </div>
   </aside>
 

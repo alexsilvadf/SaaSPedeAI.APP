@@ -22,7 +22,7 @@ export class PainelShellComponent implements OnInit, OnDestroy {
   usuario: Usuario | null = null;
   avisosEntregador = 0;
 
-  readonly nav: NavItem[] = [
+  private readonly nav: NavItem[] = [
     { label: 'Dashboard', path: '/painel/admin', perfis: ['admin', 'gerente'] },
     { label: 'Produtos', path: '/painel/admin/produtos', perfis: ['admin', 'gerente'] },
     { label: 'Mesas', path: '/painel/admin/mesas', perfis: ['admin', 'gerente'] },
@@ -40,6 +40,14 @@ export class PainelShellComponent implements OnInit, OnDestroy {
     private readonly notificacaoService: NotificacaoService,
     private readonly router: Router
   ) {}
+
+  get navVisivel(): NavItem[] {
+    return this.nav.filter((item) => this.podeVer(item));
+  }
+
+  get mostrarVerCardapio(): boolean {
+    return this.usuario?.perfil !== 'entregador';
+  }
 
   ngOnInit(): void {
     this.auth.usuario$
@@ -73,14 +81,7 @@ export class PainelShellComponent implements OnInit, OnDestroy {
     if (!this.usuario) {
       return false;
     }
-    if (item.path === '/painel/entregador') {
-      return this.usuario.perfil === 'entregador';
-    }
-    return (
-      item.perfis.includes(this.usuario.perfil) ||
-      this.usuario.perfil === 'admin' ||
-      this.usuario.perfil === 'gerente'
-    );
+    return item.perfis.includes(this.usuario.perfil);
   }
 
   badge(item: NavItem): number {

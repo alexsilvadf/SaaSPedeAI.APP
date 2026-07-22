@@ -3,7 +3,10 @@
     <button type="button" class="checkout__back" (click)="voltar()" aria-label="Voltar">‹</button>
     <div>
       <h1>Finalize seu pedido</h1>
-      <p>{{ loja.nome }} · {{ tituloCanal }}</p>
+      <p *ngIf="dadosSalvos; else checkoutLoja">Bem-vindo, {{ form.nome }} · {{ tituloCanal }}</p>
+      <ng-template #checkoutLoja>
+        <p>{{ loja.nome }} · {{ tituloCanal }}</p>
+      </ng-template>
     </div>
   </header>
 
@@ -24,6 +27,7 @@
 
   <form class="card" (ngSubmit)="confirmar()" novalidate>
     <h2>Seus dados</h2>
+    <p class="hint" *ngIf="dadosSalvos">Dados do seu último pedido preenchidos automaticamente.</p>
 
     <label>
       Nome

@@ -41,6 +41,13 @@
   margin-top: 0.75rem;
 }
 
+.store__welcome {
+  margin: 0 0 0.35rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--ifood-red, #ea1d2c);
+}
+
 .store__info h1 {
   margin: 0;
   font-size: 1.35rem;

@@ -60,6 +60,15 @@
   color: #1a1a1a;
 }
 
+.hint {
+  margin: -0.45rem 0 0.85rem;
+  font-size: 0.8rem;
+  color: #3e3e3e;
+  background: #f2f2f2;
+  border-radius: 8px;
+  padding: 0.55rem 0.7rem;
+}
+
 .item {
   display: flex;
   justify-content: space-between;

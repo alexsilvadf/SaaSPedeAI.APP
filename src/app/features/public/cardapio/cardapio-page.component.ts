@@ -4,6 +4,7 @@ import { Subject, combineLatest, of } from 'rxjs';
 import { catchError, map, switchMap, takeUntil } from 'rxjs/operators';
 import { CarrinhoService } from '../../../core/services/carrinho.service';
 import { CardapioService } from '../../../core/services/cardapio.service';
+import { ClientePreferenciasService } from '../../../core/services/cliente-preferencias.service';
 import { LojaService } from '../../../core/services/loja.service';
 import { PedidoService } from '../../../core/services/pedido.service';
 import {
@@ -36,6 +37,7 @@ export class CardapioPageComponent implements OnInit, OnDestroy {
   categoriaAtiva: string | null = null;
   carregando = true;
   erro = '';
+  nomeCliente = '';
 
   tipoPedido: TipoPedido = 'delivery';
   mesaNumero?: number;
@@ -61,10 +63,13 @@ export class CardapioPageComponent implements OnInit, OnDestroy {
     private readonly lojaService: LojaService,
     private readonly cardapioService: CardapioService,
     private readonly carrinhoService: CarrinhoService,
+    private readonly clientePreferencias: ClientePreferenciasService,
     public readonly pedidoService: PedidoService
   ) {}
 
   ngOnInit(): void {
+    this.carregarSaudacao();
+
     this.route.paramMap
       .pipe(
         takeUntil(this.destroy$),
@@ -314,5 +319,10 @@ export class CardapioPageComponent implements OnInit, OnDestroy {
     this.toastTimer = setTimeout(() => {
       this.toastVisivel = false;
     }, 2200);
+  }
+
+  private carregarSaudacao(): void {
+    const salvos = this.clientePreferencias.carregar();
+    this.nomeCliente = salvos?.nome?.trim() ?? '';
   }
 }
